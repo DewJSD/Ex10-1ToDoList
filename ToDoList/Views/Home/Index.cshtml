@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ToDo>
+﻿@model ToDoViewModel
 @{
     string Overdue(ToDo task) => task.Overdue ? "bg-warning" : "";
 }
@@ -8,24 +8,24 @@
             <div class="form-group">
                 <label>Category:</label>
                 <select name="filter" class="form-control"
-                        asp-items="@(new SelectList(ViewBag.Categories,
-                    "CategoryId", "Name", ViewBag.Filters.CategoryId))">
+                        asp-items="@(new SelectList(Model.Categories,
+                    "CategoryId", "Name", Model.Filters.CategoryId))">
                     <option value="all">All</option>
                 </select>
             </div>
             <div class="form-group">
                 <label>Due:</label>
                 <select name="filter" class="form-control"
-                        asp-items="@(new SelectList(ViewBag.DueFilters,
-                    "Key", "Value", ViewBag.Filters.Due))">
+                        asp-items="@(new SelectList(Model.DueFilters,
+                    "Key", "Value", Model.Filters.Due))">
                     <option value="all">All</option>
                 </select>
             </div>
             <div class="form-group">
                 <label>Status:</label>
                 <select name="filter" class="form-control"
-                        asp-items="@(new SelectList(ViewBag.Statuses,
-                    "StatusId", "Name", ViewBag.Filters.StatusId))">
+                        asp-items="@(new SelectList(Model.Statuses,
+                    "StatusId", "Name", Model.Filters.StatusId))">
                     <option value="all">All</option>
                 </select>
             </div>
@@ -48,7 +48,7 @@
                 </tr>
             </thead>
             <tbody>
-            @foreach (ToDo task in Model)
+            @foreach (ToDo task in Model.Tasks)
             {
                 string overdue = Overdue(task);
                 <tr>
@@ -58,7 +58,7 @@
                     <td class="@overdue">@task.Status.Name</td>
                     <td>
                         <form asp-action="Edit" method="post" 
-                              asp-route-id="@ViewBag.Filters.FilterString" 
+                              asp-route-id="@Model.Filters.FilterString" 
                               class="mr-2">
 
                             <input type="hidden" 

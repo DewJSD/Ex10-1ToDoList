@@ -13,12 +13,14 @@ namespace ToDoList.Controllers
 
         public IActionResult Index(string id)
         {
+            ToDoViewModel VModel = new ToDoViewModel();
+
             // load current filters and data needed for filter drop downs in ViewBag
             var filters = new Filters(id);
-            ViewBag.Filters = filters;
-            ViewBag.Categories = context.Categories.ToList();
-            ViewBag.Statuses = context.Statuses.ToList();
-            ViewBag.DueFilters = Filters.DueFilterValues;
+            VModel.Filters = filters;
+            VModel.Categories = context.Categories.ToList();
+            VModel.Statuses = context.Statuses.ToList();
+            VModel.DueFilters = Filters.DueFilterValues;
 
             // get ToDo objects from database based on current filters
             IQueryable<ToDo> query = context.ToDos
@@ -39,30 +41,32 @@ namespace ToDoList.Controllers
                     query = query.Where(t => t.DueDate == today);
             }
             var tasks = query.OrderBy(t => t.DueDate).ToList();
-            return View(tasks);
+            VModel.Tasks = tasks;
+            return View(VModel);
         }
 
         public IActionResult Add()
         {
-            ViewBag.Categories = context.Categories.ToList();
-            ViewBag.Statuses = context.Statuses.ToList();
+            ToDoViewModel VModel = new ToDoViewModel();
+            VModel.Categories = context.Categories.ToList();
+            VModel.Statuses = context.Statuses.ToList();
             return View();
         }
 
         [HttpPost]
-        public IActionResult Add(ToDo task)
+        public IActionResult Add(ToDoViewModel VModel)
         {
             if (ModelState.IsValid)
             {
-                context.ToDos.Add(task);
+                context.ToDos.Add(VModel.CurrentTask);
                 context.SaveChanges();
                 return RedirectToAction("Index");
             }
             else
             {
-                ViewBag.Categories = context.Categories.ToList();
-                ViewBag.Statuses = context.Statuses.ToList();
-                return View(task);
+                VModel.Categories = context.Categories.ToList();
+                VModel.Statuses = context.Statuses.ToList();
+                return View(VModel);
             }
         }
 
